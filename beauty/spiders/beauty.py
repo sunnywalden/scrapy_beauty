@@ -20,12 +20,17 @@ class BeautySpider(scrapy.Spider):
     	'http://www.27270.com/tag/782.html',
 	'http://www.27270.com/tag/35.html',
 	'http://www.27270.com/tag/288.html',
+	'http://www.27270.com/tag/441.html',
 	]
+
+    num = 1
+    items_per_page = 0
 
     def parse(self, response):
 		items = []
         # write the category page data extraction code here
-
+#		global num
+#		num += 1
 
 		for li in response.xpath('//ul[@id="Tag_list"]'):
 			print(li)
@@ -35,11 +40,28 @@ class BeautySpider(scrapy.Spider):
 			print(titles,imgs,pages)
 		total = len(titles)
 		print(total)
+#		global items_per_page
+#		items_per_page = total
 
 		for i in range(total):
 			print(titles[i],pages[i])
 			yield scrapy.Request(pages[i],callback=self.parse_beauty)
 		self.logger.debug('callback "parse": got response %r' % response)
+
+#		for page in response.xpath('//div[@class="TagPage"]'):
+#			pages = page.xpath('li/a/text()').extract()
+#			sum = int(len(pages)) - 2
+		while total <= 30:   #There is 30 items per page
+			next_page = response.xpath('//div[@class="TagPage"]/ul/li/a/@href').extract()[-2]
+			url = 'http://www.27270.com' + next_page
+			yield scrapy.Request(url, callback=self.parse)
+
+#		for page in response.xpath('//div[@class="TagPage"]'):
+#			pages = page.xpath('li/a/text()').extract()
+#			sum = int(len(pages)) - 2
+#			url = request.url.split('.html')[0]
+#			for i in range(num,sum + 1):
+#				yield scrapy.Request(url + '_' + i + '.html',callback=self.parse)
 
     def parse_beauty(self, response):
 		detail = response.xpath('//div[@id="picBody"]');

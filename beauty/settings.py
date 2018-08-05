@@ -112,6 +112,6 @@ IPPOOL=[
 ]
 
 IMAGES_THUMBS = {
-    'small': (50, 50),
+#    'small': (50, 50),
     'big': (270, 270),
 }
