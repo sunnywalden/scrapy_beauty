@@ -93,8 +93,8 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-IMAGES_STORE = '/tmp/images'
-IMAGES_EXPIRES = 30
+IMAGES_STORE = '/tmp/images/beauty'
+#IMAGES_EXPIRES = 30
 LOG_ENABLED = True
 LOG_LEVEL = "INFO"
 

@@ -16,6 +16,7 @@ class BeautySpider(scrapy.Spider):
     name = 'siwa'
     allowed_domains = ['www.27270.com']
     start_urls = [
+	'http://www.27270.com/tag/384.html',
 	'http://www.27270.com/tag/513.html',
     	'http://www.27270.com/tag/782.html',
 	'http://www.27270.com/tag/35.html',
@@ -40,38 +41,44 @@ class BeautySpider(scrapy.Spider):
 			print(titles,imgs,pages)
 		total = len(titles)
 		print(total)
-#		global items_per_page
-#		items_per_page = total
 
 		for i in range(total):
 			print(titles[i],pages[i])
 			yield scrapy.Request(pages[i],callback=self.parse_beauty)
 		self.logger.debug('callback "parse": got response %r' % response)
 
-#		for page in response.xpath('//div[@class="TagPage"]'):
-#			pages = page.xpath('li/a/text()').extract()
-#			sum = int(len(pages)) - 2
 		while total <= 30:   #There is 30 items per page
 			next_page = response.xpath('//div[@class="TagPage"]/ul/li/a/@href').extract()[-2]
 			url = 'http://www.27270.com' + next_page
 			yield scrapy.Request(url, callback=self.parse)
 
-#		for page in response.xpath('//div[@class="TagPage"]'):
-#			pages = page.xpath('li/a/text()').extract()
-#			sum = int(len(pages)) - 2
-#			url = request.url.split('.html')[0]
-#			for i in range(num,sum + 1):
-#				yield scrapy.Request(url + '_' + i + '.html',callback=self.parse)
 
     def parse_beauty(self, response):
-		detail = response.xpath('//div[@id="picBody"]');
+	if response.status==200:	
+		detail = response.xpath('//div[@id="picBody"]')
 		title = detail.xpath('p/a/img/@alt').extract()[0]
 		image_url = detail.xpath('p/a/img/@src').extract()[0]
 		print(title,image_url)
-		
-		beauty = BeautyItem()		
+
+		beauty = BeautyItem()	
 		beauty['title'] = title
 		beauty['image_urls'] = [image_url]
 
 		yield beauty
+		self.logger.debug('callback "parse": got response %r' % response)
+		
+		pages = response.xpath('//ul[@class="articleV4Page l"]')
+		total_pages = pages.xpath('li[@class="hide"]/@pageinfo').extract()[0]
+		next_page = pages.xpath('li[@id="nl"]/a/@href').extract()[0]
+		
+		#url = request.url
+		#next_page_url = '/'.join(url.split('/')[0:-1]) + '/' + next_page
+		next_page_url = '/'.join(image_url.split('/')[0:-1]) + '/' + next_page
+		print(title,image_url)
+		print('scrath for next page', next_page_url)
+		#yield scrapy.Request(url, callback=self.parse_beauty)
+		yield scrapy.Request(next_page_url, callback=self.parse_beauty)
+	else:
+		print('request url:',request.url,'returned error')
+		scrapy.Request(request.url, callback=self.parse_beauty)
 		self.logger.debug('callback "parse": got response %r' % response)
