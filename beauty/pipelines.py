@@ -8,19 +8,15 @@
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exceptions import DropItem
 from scrapy import Request
-#from scrapy import log
+import logging
 
-
-#class BeautyPipeline(object):
-#    def process_item(self, item, spider):
-#        
-#	return item
 
 class ImgDownloadPipeline(ImagesPipeline):
-	
+
+	logger = logging.getLogger(__name__)	
 	def get_media_requests(self, item, info):
         	for image_url in item['image_urls']:
-			print('Start download image', image_url)
+			self.logger.info('Start download image %s', image_url)
             		yield Request(image_url,meta={'item':item,'index':item['image_urls'].index(image_url)})
 
 
@@ -29,12 +25,6 @@ class ImgDownloadPipeline(ImagesPipeline):
 		item = request.meta['item']  # 通过上面的meta传递过来item
 		index = request.meta['index']
 		beauty_name = item['title'] + '.jpg'
-		print('beauty name is', beauty_name)
+		self.logger.info('the name of beauty that been downloaded right now is %s', beauty_name)
 		return beauty_name
 
-#    	def item_completed(self, results, item, info):
-#        	image_paths = [x['path'] for ok, x in results if ok]
-#        	if not image_paths:
-#            		raise DropItem("Item contains no images")
-#        	item['image_paths'] = image_paths
-#        	return item

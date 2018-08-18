@@ -22,18 +22,18 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 100
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 32
+CONCURRENT_REQUESTS_PER_IP = 32
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -53,11 +53,14 @@ ROBOTSTXT_OBEY = True
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'beauty.middlewares.BeautyDownloaderMiddleware': 543,
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware':None,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+    'scrapy_proxies.RandomProxy': 100,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+#    'beauty.middlewares.BeautyDownloaderMiddleware': 543,
+#    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware':None,
 #    'beauty.middlewares.BeautySpiderMiddleware':125,
-    'beauty.middlewares.ProxyMiddleWare':125,
-    'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware':None
+#    'beauty.middlewares.ProxyMiddleWare':125,
+#    'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware':None
 }
 
 # Enable or disable extensions
@@ -93,10 +96,20 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-IMAGES_STORE = '/tmp/images/beauty'
-#IMAGES_EXPIRES = 30
+IMAGES_STORE = '/Users/cloudin/Documents/images/beauty'
+IMAGES_EXPIRES = 30
+LOG_FILE = "./logs/beauty.log"
+LOG_ENCODING = "UTF-8"
 LOG_ENABLED = True
 LOG_LEVEL = "INFO"
+DOWNLOAD_FAIL_ON_DATALOSS = False
+DOWNLOAD_TIMEOUT = 15
+RETRY_ENABLED = True
+RETRY_TIMES = 5
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+#RETRY_HTTP_CODECS = "500,502,503,504,408"
+PROXY_LIST = '/tmp/proxies_beauty.txt'
+PROXY_MODE = 0
 
 IPPOOL=[
 	{"ipaddr":"167.99.153.166:8080"},

@@ -5,14 +5,17 @@ from scrapy.spiders import CrawlSpider, Rule
 import scrapy
 from ..items import BeautyItem
 import proxy
+import logging
 
+#print('start generate proxy ip')
+#proxy.get_proxy()
+logger = logging.getLogger(__name__)
 
-
-#class BeautySpider(CrawlSpider):
 class BeautySpider(scrapy.Spider):
+    
     print('start generate proxy ip')
     proxy.get_proxy()
-    
+
     name = 'siwa'
     allowed_domains = ['www.27270.com']
     start_urls = [
@@ -30,55 +33,64 @@ class BeautySpider(scrapy.Spider):
     def parse(self, response):
 		items = []
         # write the category page data extraction code here
-#		global num
-#		num += 1
+
+		logger.info('Parse function called on %s', response.url)
+		if not response.xpath('//ul[@id="Tag_list"]'):
+    			yield Request(url=response.url, dont_filter=True)
 
 		for li in response.xpath('//ul[@id="Tag_list"]'):
-			print(li)
 			titles = li.xpath('li/a/@title').extract()
 			imgs = li.xpath('li/a/img/@src').extract()
 			pages = li.xpath('li/a/@href').extract()
-			print(titles,imgs,pages)
+			
+			logger.info('%s %s %s',titles,imgs,pages)
 		total = len(titles)
-		print(total)
 
 		for i in range(total):
-			print(titles[i],pages[i])
+			self.logger.info('%s %s',titles[i],pages[i])
 			yield scrapy.Request(pages[i],callback=self.parse_beauty)
-		self.logger.debug('callback "parse": got response %r' % response)
+		self.logger.debug('callback "parse": got response %s',response)
+		logger.info('we have done with this page %s',response.url)
 
-		while total <= 30:   #There is 30 items per page
-			next_page = response.xpath('//div[@class="TagPage"]/ul/li/a/@href').extract()[-2]
+		while total <= total:   #There is 30 items per page
+			next_page = response.xpathfo('//div[@class="TagPage"]/ul/li/a/@href').extract()[-2]
 			url = 'http://www.27270.com' + next_page
+			self.logger.info('Crawl for next page now %s',url)
 			yield scrapy.Request(url, callback=self.parse)
 
 
     def parse_beauty(self, response):
+
+	if not response.xpath('//div[@id="picBody"]'):
+		yield Request(url=response.url, dont_filter=True)
+	
 	if response.status==200:	
 		detail = response.xpath('//div[@id="picBody"]')
 		title = detail.xpath('p/a/img/@alt').extract()[0]
 		image_url = detail.xpath('p/a/img/@src').extract()[0]
-		print(title,image_url)
+		self.logger.info( '%s %s',title,image_url)
 
 		beauty = BeautyItem()	
-		beauty['title'] = title
+#		beauty['title'] = title
 		beauty['image_urls'] = [image_url]
 
+#		yield beauty
+#		self.logger.debug('callback "parse": got response %r' % response)
+
+		pages = response.xpath('//ul[@class="articleV4Page l"]')
+		total_pages = pages.xpath('li[@class="hide"]/@pageinfo').extract()[0]
+		current_page = pages.xpath('li[@class="thisclass"]/a[@href="#"]/text()').extract()[0]
+		next_page = pages.xpath('li[@id="nl"]/a/@href').extract()[0]
+		beauty['title'] = title + current_page
+		self.logger.info('Starting crawl for next page of %s',beauty['title'])	
+		
 		yield beauty
 		self.logger.debug('callback "parse": got response %r' % response)
 		
-		pages = response.xpath('//ul[@class="articleV4Page l"]')
-		total_pages = pages.xpath('li[@class="hide"]/@pageinfo').extract()[0]
-		next_page = pages.xpath('li[@id="nl"]/a/@href').extract()[0]
-		
-		#url = request.url
-		#next_page_url = '/'.join(url.split('/')[0:-1]) + '/' + next_page
-		next_page_url = '/'.join(image_url.split('/')[0:-1]) + '/' + next_page
-		print(title,image_url)
-		print('scrath for next page', next_page_url)
-		#yield scrapy.Request(url, callback=self.parse_beauty)
+		url = response.url
+		next_page_url = '/'.join(url.split('/')[0:-1]) + '/' + next_page
+		self.logger.info('There are %s pages out there.scrath for next page %s', total_pages,next_page_url)
 		yield scrapy.Request(next_page_url, callback=self.parse_beauty)
 	else:
-		print('request url:',request.url,'returned error')
-		scrapy.Request(request.url, callback=self.parse_beauty)
+		self.logger.info('request url %s returned error',request.url)
 		self.logger.debug('callback "parse": got response %r' % response)
