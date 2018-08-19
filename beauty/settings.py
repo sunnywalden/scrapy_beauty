@@ -124,7 +124,7 @@ IPPOOL=[
 	{"ipaddr":"124.238.248.4:80"}
 ]
 
-IMAGES_THUMBS = {
+#IMAGES_THUMBS = {
 #    'small': (50, 50),
-    'big': (270, 270),
-}
+#    'big': (270, 270),
+#}
