@@ -1,5 +1,7 @@
 # scrapy_beauty
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://github.com/hhyo/archery/blob/master/LICENSE)
+
 ## 一、项目说明
 
 通过scrapy框架，爬虫获取27270.com站点中国美女、韩国美女等标签下的高清美女图片
