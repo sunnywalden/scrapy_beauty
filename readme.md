@@ -10,7 +10,7 @@
 
 ## 二、效果图
 
-![image](https://github.com/sunnywalden/crapy_beauty/raw/master/demo/beauty_demo.png)
+![demo](demo/beauty_demo.png)
 
 ## 三、部署
 
