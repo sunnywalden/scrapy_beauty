@@ -34,5 +34,5 @@ scrapy crawl siwa
 
 ## 四、感谢
 
-代理使用了https://github.com/jhao104/proxy_pool项目，在此感谢！
+代理使用了jhao104的[proxy_pool](https://github.com/jhao104/proxy_pool)项目，在此感谢！
 
