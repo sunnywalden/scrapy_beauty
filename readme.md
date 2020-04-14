@@ -10,7 +10,7 @@
 
 ## 二、效果图
 
-![demo](demo/beauty_demo.png)
+![demo](./demo/beauty_demo.png)
 
 ## 三、部署
 
