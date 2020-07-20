@@ -1,4 +1,4 @@
-PyMySQL==0.9.3
+PyMySQL==0.10.0
 Scrapy==2.0.1
 scrapy-proxies==0.4
 urllib3==1.25.8
