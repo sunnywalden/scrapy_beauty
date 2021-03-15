@@ -1,6 +1,6 @@
 PyMySQL==1.0.2
 Scrapy==2.4.1
 scrapy-proxies==0.4
-urllib3==1.26.3
+urllib3==1.26.4
 requests>=2.21.0
 beautifulsoup4>=4.7.1
