@@ -1,3 +1,5 @@
 .idea
 venv
 beauty/logs/*
+
+.pyc
