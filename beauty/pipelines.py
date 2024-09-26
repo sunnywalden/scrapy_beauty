@@ -5,33 +5,36 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-from scrapy.pipelines.images import ImagesPipeline
-from scrapy.exceptions import DropItem
-from scrapy import Request
 import logging
-import pymysql
-from scrapy.utils.project import get_project_settings  # 导入seetings配置
 
-from items import BeautyItem
+import pymysql
+from itemadapter import ItemAdapter
+from scrapy import Request
+from scrapy.pipelines.files import FilesPipeline
+from scrapy.utils.project import get_project_settings  # 导入settings配置
+
+from .items import BeautyItem
 
 logger = logging.getLogger(__name__)
 
 
-class ImgDownloadPipeline(ImagesPipeline):
+class FileDownloadPipeline(FilesPipeline):
     logger = logging.getLogger(__name__)
 
     def get_media_requests(self, item, info):
-        for image_url in item['image_urls']:
+        self.logger.info('FileDownloadPipeline: Processing item %s', item)
+        adapter = ItemAdapter(item)
+        for image_url in adapter['file_urls']:
+            # image_id = image_url.split('/')[-1]
+            # beauty_name = image_id + ".jpg"
             self.logger.info('Start download image %s', image_url)
-            yield Request(image_url, meta={'item': item, 'index': item['image_urls'].index(image_url)})
+            yield Request(image_url)
 
-    def file_path(self, request, response=None, info=None):
-        item = request.meta['item']  # 通过上面的meta传递过来item
-        index = request.meta['index']
-        beauty_name = item['title'] + '.jpg'
-        self.logger.info('the name of beauty that been downloaded right now is %s', beauty_name)
+    def file_path(self, request, response=None, info=None, *, item=None):
+        beauty_name = request.url.split('/')[-1] + '.jpg'
+
+        self.logger.info(f'the name of beauty that been downloaded right now is %s', beauty_name)
         return beauty_name
-
 
 class BeautyItemPipeline(object):
     """保存到数据库中对应的class
@@ -65,15 +68,10 @@ class BeautyItemPipeline(object):
         conn = self.db_handle()
         cursor = conn.cursor()
         if isinstance(item, BeautyItem):
-            self.logger.info('Handle beauty %s item now', item['title'])
-            sql = "insert ignore into beauty values(%s,%s,%s,%s)"
-            paths = ''
-            for image_path in item['image_paths']:
-                paths += image_path + ','
-            for image_url in item['img_urls']:
-                final_url = image_url
-            params = (item['title'], final_url, paths)
-            self.logger.info(sql, item['title'], final_url, paths)
+            self.logger.info('Handle beauty %s item now', item['id'])
+            sql = "insert ignore into beauty(id,title,image_url) values(%s,%s,%s)"
+            params = (item['id'], item['title'], item['file_urls'][0])
+            self.logger.info(sql, item['id'], item['title'], item['file_urls'][0])
         else:
             self.logger.error('Not a beauty item: %s', item['title'])
         try:

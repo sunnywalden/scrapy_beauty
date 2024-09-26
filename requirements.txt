@@ -4,3 +4,5 @@ scrapy-proxies==0.4
 urllib3==1.26.19
 requests>=2.21.0
 beautifulsoup4>=4.7.1
+olefile>=0.47
+Pillow>=6.2.0

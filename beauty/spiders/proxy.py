@@ -4,14 +4,14 @@ import requests
 
 
 def get_proxy():
-	proxie = []
-	for i in range(50):
-		proxy = 'http://'+requests.get("http://123.207.35.36:5010/get/").content
-		print(proxy)
-		proxie.append(proxy)
-	with open('/tmp/proxies_beauty.txt', 'a') as f:
-		for proxy in proxie:
-        		f.write(proxy+'\n')
+    proxies = []
+    for i in range(50):
+        proxy = 'http://'+requests.get("http://192.168.0.109:5010/get/").json().get('proxy')
+        print(proxy)
+        proxies.append(proxy)
+    with open('/tmp/proxies_beauty.txt', 'a') as f:
+        for proxy in proxies:
+                f.write(proxy+'\n')
 
 if __name__=='__main__':
-	get_proxy()
+    get_proxy()

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+from logging.handlers import RotatingFileHandler
 
 # Scrapy settings for beauty project
 #
@@ -73,7 +75,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'beauty.pipelines.BeautyItemPipeline': 300,
-    'beauty.pipelines.ImgDownloadPipeline': 300,
+    'beauty.pipelines.FileDownloadPipeline': 1,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -97,12 +99,19 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-IMAGES_STORE = '~/Documents/images/beauty'
-IMAGES_EXPIRES = 30
+# MEDIA_ALLOW_REDIRECTS = True
+FILES_STORE = '/Users/sunnywalden/beauty_images' # 保存图片的路径，请修改
+FILES_EXPIRES = 90
 LOG_FILE = "beauty/logs/beauty.log"
 LOG_ENCODING = "UTF-8"
 LOG_ENABLED = True
-LOG_LEVEL = "INFO"
+LOG_LEVEL = logging.INFO
+LOG_MAX_BYTES = 2 * 1024 * 1024  # 2MB
+LOG_BACKUP_COUNT = 3  # Number of backup files to keep
+
+handler = RotatingFileHandler(LOG_FILE, maxBytes=LOG_MAX_BYTES, backupCount=LOG_BACKUP_COUNT)
+logging.basicConfig(level=LOG_LEVEL, handlers=[handler])
+
 DOWNLOAD_FAIL_ON_DATALOSS = False
 DOWNLOAD_TIMEOUT = 15
 RETRY_ENABLED = True
@@ -112,27 +121,14 @@ RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
 PROXY_LIST = '/tmp/proxies_beauty.txt'
 PROXY_MODE = 0
 
-# IPPOOL=[
-# 	{"ipaddr":"167.99.153.166:8080"},
-# 	{"ipaddr":"151.106.52.123:1080"},
-# 	{"ipaddr":"142.4.209.32:3128"},
-# 	{"ipaddr":"95.211.242.43:808"},
-# 	{"ipaddr":"181.199.199.247:53281"},
-# 	{"ipaddr":"167.99.197.73:8080"},
-# 	{"ipaddr":"151.106.52.243:1080"},
-# 	{"ipaddr":"140.143.105.245:80"},
-# 	{"ipaddr":"39.104.59.236:8080"},
-# 	{"ipaddr":"124.238.248.4:80"}
-# ]
-
 #IMAGES_THUMBS = {
 #    'small': (50, 50),
 #    'big': (270, 270),
 #}
 
-MYSQL_HOST = '127.0.0.1'
+MYSQL_HOST = '192.168.0.1' # 数据库IP，请修改
 MYSQL_DBNAME = 'beauty'         #数据库名字，请修改
-MYSQL_USER = 'walden'             #数据库账号，请修改
-MYSQL_PASSWD = 'walden0114'         #数据库密码，请修改
+MYSQL_USER = 'user'             #数据库账号，请修改
+MYSQL_PASSWD = 'yourPassword'         #数据库密码，请修改
 
 MYSQL_PORT = 3306               #数据库端口，在dbhelper中使用

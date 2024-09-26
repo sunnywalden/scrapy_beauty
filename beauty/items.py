@@ -10,6 +10,7 @@ import scrapy
 
 class BeautyItem(scrapy.Item):
     # define the fields for your item here like:
+    id = scrapy.Field()
     title = scrapy.Field()
-    image_urls = scrapy.Field()
-    image_paths = scrapy.Field()
+    file_urls = scrapy.Field()
+    files = scrapy.Field()
