@@ -17,9 +17,10 @@
 ### 3.1 部署依赖
 
 请先部署mysql、redis、proxy_pool服务，推荐以docker方式部署
-mysql、redis部署，参考官方文档；
 
-proxy_pool部署，参考链接：
+1)mysql、redis部署，参考官方文档；
+
+2)proxy_pool部署，参考链接：
 https://github.com/jhao104/proxy_pool?tab=readme-ov-file#docker-image
 
 ### 3.2 获取代码
