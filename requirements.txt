@@ -1,5 +1,5 @@
 PyMySQL==1.1.1
-Scrapy==2.11.2
+Scrapy==2.12.0
 scrapy-proxies==0.4
 urllib3==2.2.3
 requests>=2.21.0
